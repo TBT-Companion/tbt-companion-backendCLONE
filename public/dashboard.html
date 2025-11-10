@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TBT Companion - Doctor Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🏥 TBT Companion</h2>
+                <p id="doctor-name">Loading...</p>
+                <span id="user-role-badge" class="role-badge" style="display: none;"></span>
+            </div>
+            
+            <!-- Admin Navigation (only shown for admins) -->
+            <nav id="admin-nav" class="admin-nav" style="display: none;">
+                <button class="nav-btn active" data-view="patients">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    My Patients
+                </button>
+                <button class="nav-btn" data-view="admin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                    </svg>
+                    Admin Panel
+                </button>
+            </nav>
+            
+            <div class="sidebar-section" id="patients-sidebar-section">
+                <h3>My Patients</h3>
+                <div class="search-box">
+                    <input type="text" id="patient-search" placeholder="Search patients...">
+                </div>
+                <div id="patient-list" class="patient-list">
+                    <div class="loading">Loading patients...</div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="btn btn-secondary">Sign Out</button>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Welcome Screen -->
+            <div id="welcome-screen" class="welcome-screen">
+                <div class="welcome-content">
+                    <h1>Welcome to TBT Companion</h1>
+                    <p>Select a patient from the sidebar to view their information and start chatting.</p>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="total-patients">0</div>
+                            <div class="stat-label">Total Patients</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="unread-messages">0</div>
+                            <div class="stat-label">Unread Messages</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Patient Details & Chat -->
+            <div id="chat-screen" class="chat-screen" style="display: none;">
+                <!-- Patient Header -->
+                <div class="patient-header">
+                    <div class="patient-info">
+                        <div class="patient-avatar">
+                            <span id="patient-avatar-text">P</span>
+                        </div>
+                        <div class="patient-details">
+                            <h2 id="selected-patient-name">Patient Name</h2>
+                            <div class="patient-meta">
+                                <span id="patient-email">patient@example.com</span>
+                                <span class="separator">•</span>
+                                <span id="patient-status">Last seen recently</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="close-chat-btn" class="btn-icon" title="Close chat">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Patient Info Panel (Collapsible) -->
+                <div class="patient-info-panel" id="patient-info-panel">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Medical Record #</label>
+                            <span id="info-mrn">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Date of Birth</label>
+                            <span id="info-dob">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Phone Number</label>
+                            <span id="info-phone">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Treatment Start</label>
+                            <span id="info-treatment-start">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="chat-messages" id="chat-messages">
+                    <div class="loading">Loading messages...</div>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div id="typing-indicator" class="typing-indicator" style="display: none;">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span id="typing-user-name">Patient</span> is typing...
+                </div>
+                
+                <!-- Message Input -->
+                <div class="message-input-container">
+                    <form id="message-form" class="message-form">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Type your message..." 
+                            rows="1"
+                            maxlength="1000"
+                        ></textarea>
+                        <button type="submit" class="btn-send" id="send-btn" disabled>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M2 10L18 2L10 18L8 11L2 10Z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Admin Panel -->
+            <div id="admin-screen" class="admin-screen" style="display: none;">
+                <div class="admin-header">
+                    <h1>👨‍💼 Admin Panel</h1>
+                    <p>Manage users and assign patients to doctors</p>
+                </div>
+                
+                <!-- All Users -->
+                <div id="admin-tab-users" class="admin-tab-content active">
+                    <div class="admin-controls">
+                        <div class="search-box">
+                            <input type="text" id="admin-user-search" placeholder="Search users by name or email...">
+                        </div>
+                        <select id="admin-role-filter" class="filter-select">
+                            <option value="">All Roles</option>
+                            <option value="patient">Patients</option>
+                            <option value="doctor">Doctors</option>
+                            <option value="admin">Admins</option>
+                        </select>
+                    </div>
+                    
+                    <div id="admin-users-list" class="admin-users-list">
+                        <div class="loading">Loading users...</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit User</h3>
+                <button class="modal-close" onclick="closeEditUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit-user-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-user-name" readonly class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit-user-email" readonly class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="edit-user-role">Role</label>
+                    <select id="edit-user-role" class="form-select">
+                        <option value="patient">Patient</option>
+                        <option value="doctor">Doctor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditUserModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveUserRole()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assign Patient Modal -->
+    <div id="assign-patient-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="assign-modal-title">Assign Patient to Doctor</h3>
+                <button class="modal-close" onclick="closeAssignPatientModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="quick-assign-patient-id">
+                <div class="form-group">
+                    <label>Patient</label>
+                    <input type="text" id="quick-assign-patient-name" readonly class="form-input">
+                </div>
+                <div id="quick-assign-current-doctor" class="info-text" style="display: none;"></div>
+                <div class="form-group">
+                    <label for="quick-assign-doctor-select"><span id="assign-action-label">Assign to Doctor</span></label>
+                    <select id="quick-assign-doctor-select" class="form-select">
+                        <option value="">Select a doctor...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAssignPatientModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveQuickAssignment()" id="quick-assign-btn" disabled>
+                    <span id="assign-btn-text">Assign Doctor</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
+

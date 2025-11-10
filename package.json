@@ -1,0 +1,40 @@
+{
+  "name": "tbt-server",
+  "version": "1.0.0",
+  "description": "Patient-facing iOS app that provides education (guided walkthroughs with square media) and reminders for transverse bone transport care. ",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TBT-Companion/tbt-companion-backend.git"
+  },
+  "keywords": [
+    "tbt",
+    "bone",
+    "medcare"
+  ],
+  "author": "Haowen Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TBT-Companion/tbt-companion-backend/issues"
+  },
+  "homepage": "https://github.com/TBT-Companion/tbt-companion-backend#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.922.0",
+    "@aws-sdk/s3-request-presigner": "^3.922.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "firebase-admin": "^12.0.0",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.0.0",
+    "socket.io": "^4.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.0"
+  }
+}
